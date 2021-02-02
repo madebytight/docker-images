@@ -80,8 +80,8 @@ RUN set -eux; \
 # Node, download pre-built binary - based on https://hub.docker.com/_/node
 #
 
-ARG NODE_VERSION="10.23.2"
-ARG NODE_CHECKSUM_X64="b3ae42c904bfda144df81275fbc8ef89baab0babca0f95a1e06f4b4064f3f8ee"
+ARG NODE_VERSION="12.19.1"
+ARG NODE_CHECKSUM_X64="eaf8642a5577bb91daf22ce37281d10ac381eee678bc15b0f1501deeb52b84d5"
 
 RUN set -eux; \
     ARCH="$(apk --print-arch)"; \
