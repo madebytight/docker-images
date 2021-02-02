@@ -101,7 +101,7 @@ RUN set -eux; \
 # Defaults for both ruby and node
 #
 
-# Common dependencies needed by gems
+# Common dependencies
 RUN set -eux; \
     apk add \
       build-base \
@@ -119,7 +119,6 @@ RUN set -eux; \
 
 # Install bundler
 RUN gem install bundler
-
 
 # Install yarn
 RUN npm install -g yarn
