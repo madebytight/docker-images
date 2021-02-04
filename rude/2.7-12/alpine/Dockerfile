@@ -4,9 +4,9 @@ FROM 'alpine:3.13.1'
 # Ruby, build from source - based on https://hub.docker.com/_/ruby
 #
 
-ARG RUBY_MAJOR="2.4"
-ARG RUBY_MINOR="2.4.10"
-ARG RUBY_CHECKSUM="d5668ed11544db034f70aec37d11e157538d639ed0d0a968e2f587191fc530df"
+ARG RUBY_MAJOR="2.7"
+ARG RUBY_MINOR="2.7.2"
+ARG RUBY_CHECKSUM="1b95ab193cc8f5b5e59d2686cb3d5dcf1ddf2a86cb6950e0b4bdaae5040ec0d6"
 
 ARG RUBY_SRC="https://cache.ruby-lang.org/pub/ruby/${RUBY_MAJOR}/ruby-${RUBY_MINOR}.tar.xz"
 ARG RUBY_DST="ruby-${RUBY_MINOR}"
@@ -63,12 +63,13 @@ RUN set -eux; \
 
     # Build
     cd /usr/src/ruby; \
+    autoconf; \
     export ac_cv_func_isnan=yes ac_cv_func_isinf=yes; \
     ./configure \
       --build=$(dpkg-architecture --query DEB_BUILD_GNU_TYPE) \
       --disable-install-doc \
       --enable-shared; \
-    make -j $(nproc); \
+    make -j "4"; \
     make install; \
 
     # Cleanup
@@ -80,8 +81,8 @@ RUN set -eux; \
 # Node, download pre-built binary - based on https://hub.docker.com/_/node
 #
 
-ARG NODE_VERSION="11.15.0"
-ARG NODE_CHECKSUM_X64="b9cb5c78318ac3a0c88ff0fbccffc376a9d73d874bcfec9fa092a99c80afd8cc"
+ARG NODE_VERSION="12.20.1"
+ARG NODE_CHECKSUM_X64="783fbfc85228418d0630b778214bdcea3a82d5c3ac13aefcc14e4a81e977d9c9"
 
 RUN set -eux; \
     ARCH="$(apk --print-arch)"; \
@@ -103,7 +104,7 @@ RUN set -eux; \
 
 # Common dependencies
 RUN set -eux; \
-    apk add \
+    apk add --no-cache \
       build-base \
       bzip2 \
       ca-certificates \
@@ -132,5 +133,23 @@ RUN set -eux; \
     npm -v; \
     yarn -v
 
+# Bundler setup
+ENV GEM_HOME /usr/local/bundle
+ENV BUNDLE_SILENCE_ROOT_WARNING=1 \
+    BUNDLE_APP_CONFIG="$GEM_HOME"
+ENV PATH $GEM_HOME/bin:$PATH
+RUN mkdir -p "$GEM_HOME"
 
-CMD ["sh"]
+# Permissions
+RUN chmod 777 "$GEM_HOME" && \
+    mkdir /app && chmod 777 "/app"
+
+# Create and switch to non root user
+RUN addgroup -S app && \
+    adduser -S app -G app
+USER app
+
+RUN bundle config set --global without 'development test'; \
+    bundle config set --global jobs $(nproc)
+
+WORKDIR /app

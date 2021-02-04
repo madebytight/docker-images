@@ -6,7 +6,7 @@ Dockerfiles live in folders following this convention: `[RUBY_MAJOR]-[NODE_MAJOR
 
 Currently images are only created for Alpine.
 
-* Ruby is built from [source](https://cache.ruby-lang.org/pub/ruby/).
+* Ruby is built from source. List of [releases](https://www.ruby-lang.org/en/downloads/releases/).
 * Node binaries(and their checksums) from the [Unofficial Builds Project](https://unofficial-builds.nodejs.org/download/release/).
 
 ## Building an image
