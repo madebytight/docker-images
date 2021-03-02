@@ -69,7 +69,7 @@ RUN set -eux; \
       --build=$(dpkg-architecture --query DEB_BUILD_GNU_TYPE) \
       --disable-install-doc \
       --enable-shared; \
-    make -j "4"; \
+    make -j $(nproc); \
     make install; \
 
     # Cleanup
@@ -99,16 +99,17 @@ RUN set -eux; \
     rm node.tar.xz
 
 #
-# Defaults for both ruby and node
+# Runtime configuration
 #
 
-# Runtime dependencies
+# Install libraries and binaries
 RUN set -eux; \
     apk add --no-cache \
       build-base \
       bzip2 \
       ca-certificates \
       gcc \
+      git \
       libc-dev \
       libffi-dev \
       make \

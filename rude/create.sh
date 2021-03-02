@@ -47,7 +47,12 @@ for tag in "${EPHEMERAL_TAGS[@]}"; do
   echo
   echo
 
-  choice=$(confirm "Apply and push $tag?")
+  if [ -z ${ALL_TAGS} ]; then
+    choice=$(confirm "Apply and push $tag?")
+  else
+    choice=true
+  fi
+
   if $choice; then
     docker image tag $PINNED_TAG $tag
     docker push $tag
