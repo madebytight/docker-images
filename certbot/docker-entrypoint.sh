@@ -7,7 +7,7 @@ mkdir -p /usr/share/certbot/webroot
 /app/get-certificates.sh
 
 # Renew certificates
-/app/get-certificates.sh
+/app/renew-certificates.sh
 
 # Schedule renew
 cat << SCHEDULED > /etc/periodic/daily/renew-certificates

@@ -4,7 +4,9 @@ RUN set -eux; \
     apk add --no-cache \
       certbot \
       openssl \
-    ;
+      py3-pip \
+    ; \
+    pip3 install certbot-dns-dnsimple;
 
 COPY get-certificates.sh renew-certificates.sh /app/
 

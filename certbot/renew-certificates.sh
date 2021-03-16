@@ -7,19 +7,30 @@ expiration=$((($days * 24) * 3600))
 
 IFS=","
 for domain in $DOMAINS; do
-  cert="/etc/letsencrypt/live/$domain/fullchain.pem"
-  if [ ! -d $dst ]; then
-    continue;
+  folder=$domain
+  if [[ ${folder:0:2} = "*." ]]; then
+    folder=${folder:2}
   fi
 
-  if openssl x509 -checkend $expiration -noout -in $cert > /dev/null; then
-    continue;
-  fi;
+  dst="/etc/letsencrypt/live/$folder"
+  cert="$dst/fullchain.pem"
 
-  echo "Renew cetificate for $domain"
-  certbot certonly \
-    --webroot \
-    --webroot-path /usr/share/certbot/webroot \
-    --noninteractive \
-    -d $domain
+  if [ ! -d $dst ]; then
+    continue;
+  elif openssl x509 -checkend $expiration -noout -in $cert > /dev/null; then
+    continue;
+  elif [[ ${domain:0:2} = "*." ]]; then
+    certbot certonly \
+      --dns-dnsimple \
+      --dns-dnsimple-credentials /run/secrets/DNSIMPLE_CREDENTIALS \
+      --noninteractive \
+      -d ${domain:2} \
+      -d $domain
+  else
+    certbot certonly \
+        --webroot \
+        --webroot-path /usr/share/certbot/webroot \
+        --noninteractive \
+        -d $domain
+  fi
 done
