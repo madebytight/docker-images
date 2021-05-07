@@ -5,8 +5,8 @@ FROM 'alpine:3.13.1'
 #
 
 ARG RUBY_MAJOR="2.7"
-ARG RUBY_MINOR="2.7.2"
-ARG RUBY_CHECKSUM="1b95ab193cc8f5b5e59d2686cb3d5dcf1ddf2a86cb6950e0b4bdaae5040ec0d6"
+ARG RUBY_MINOR="2.7.3"
+ARG RUBY_CHECKSUM="5e91d1650857d43cd6852e05ac54683351e9c301811ee0bef43a67c4605e7db1"
 
 ARG RUBY_SRC="https://cache.ruby-lang.org/pub/ruby/${RUBY_MAJOR}/ruby-${RUBY_MINOR}.tar.xz"
 ARG RUBY_DST="ruby-${RUBY_MINOR}"
@@ -81,8 +81,8 @@ RUN set -eux; \
 # Node, download pre-built binary - based on https://hub.docker.com/_/node
 #
 
-ARG NODE_VERSION="12.20.1"
-ARG NODE_CHECKSUM_X64="783fbfc85228418d0630b778214bdcea3a82d5c3ac13aefcc14e4a81e977d9c9"
+ARG NODE_VERSION="12.22.1"
+ARG NODE_CHECKSUM_X64="b7c8a2cb26790b4cc21a69ea5896ecb3e88712a35dcd5f3ef1c799214ad1f5da"
 
 RUN set -eux; \
     ARCH="$(apk --print-arch)"; \
