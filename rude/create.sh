@@ -41,20 +41,21 @@ EPHEMERAL_TAGS=("$REPOSITORY:$RUBY_MAJOR-$NODE_MAJOR-alpine" "$REPOSITORY:$RUBY_
 docker build \
   -t "$PINNED_TAG" \
   "$DOCKERFILE_FOLDER"
-docker push $PINNED_TAG
 
-for tag in "${EPHEMERAL_TAGS[@]}"; do
-  echo
-  echo
+# docker push $PINNED_TAG
 
-  if [ -z ${ALL_TAGS} ]; then
-    choice=$(confirm "Apply and push $tag?")
-  else
-    choice=true
-  fi
+# for tag in "${EPHEMERAL_TAGS[@]}"; do
+#   echo
+#   echo
 
-  if $choice; then
-    docker image tag $PINNED_TAG $tag
-    docker push $tag
-  fi
-done
+#   if [ -z ${ALL_TAGS} ]; then
+#     choice=$(confirm "Apply and push $tag?")
+#   else
+#     choice=true
+#   fi
+
+#   if $choice; then
+#     docker image tag $PINNED_TAG $tag
+#     docker push $tag
+#   fi
+# done

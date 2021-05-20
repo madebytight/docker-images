@@ -112,8 +112,8 @@ RUN set -eux; \
         python3 \
       ; \
       wget "https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION.tar.xz"; \
-      mkir -p /usr/src/node; \
-      tar -xf node-v$NODE_VERSION.tar.xz -C /usr/src/node; \
+      mkdir -p /usr/src/node; \
+      tar -xJf node-v$NODE_VERSION.tar.xz -C /usr/src/node --strip-components=1; \
       cd /usr/src/node; \
       ./configure; \
       make -j$(getconf _NPROCESSORS_ONLN) V=; \
