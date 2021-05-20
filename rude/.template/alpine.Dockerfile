@@ -1,7 +1,9 @@
 FROM 'alpine:3.13.1'
 
 #
-# Ruby, build from source - based on https://hub.docker.com/_/ruby
+# Ruby:
+# - Builds from source
+# - Based on https://hub.docker.com/_/ruby
 #
 
 ARG RUBY_MAJOR="%%RUBY_MAJOR%%"
@@ -78,25 +80,49 @@ RUN set -eux; \
     apk del --no-network .ruby-deps
 
 #
-# Node, download pre-built binary - based on https://hub.docker.com/_/node
+# Node:
+# - Uses pre-built binary for x86_64, otherwise builds from source
+# - Based on https://hub.docker.com/_/node
 #
 
 ARG NODE_VERSION="%%NODE_VERSION%%"
-ARG NODE_CHECKSUM_X64="%%NODE_CHECKSUM_X64%%"
 
 RUN set -eux; \
     ARCH="$(apk --print-arch)"; \
     CHECKSUM=""; \
     if [ $ARCH = "x86_64" ]; then \
-      ARCH="x64"; \
-      CHECKSUM="$NODE_CHECKSUM_X64"; \
-    fi; \
-    NODE_SRC="https://unofficial-builds.nodejs.org/download/release/v$NODE_VERSION/node-v$NODE_VERSION-linux-$ARCH-musl.tar.xz";\
-    wget -O node.tar.xz "$NODE_SRC"; \
-    echo "$CHECKSUM *node.tar.xz" | sha256sum -c; \
-    tar -xJf "node.tar.xz" -C /usr/local --strip-components=1 --no-same-owner; \
-    ln -s /usr/local/bin/node /usr/local/bin/nodejs; \
-    rm node.tar.xz
+      NODE_SRC="https://unofficial-builds.nodejs.org/download/release/v$NODE_VERSION/node-v$NODE_VERSION-linux-x64-musl.tar.xz";\
+      wget -O node.tar.xz "$NODE_SRC"; \
+      echo "%%NODE_CHECKSUM_X64%% *node.tar.xz" | sha256sum -c; \
+      tar -xJf "node.tar.xz" -C /usr/local --strip-components=1 --no-same-owner; \
+      ln -s /usr/local/bin/node /usr/local/bin/nodejs; \
+      rm node.tar.xz; \
+    else \
+      apk add --no-cache \
+        libstdc++ \
+      ; \
+      apk add --no-cache --virtual .node-build-deps \
+        binutils-gold \
+        g++ \
+        gcc \
+        gnupg \
+        libgcc \
+        linux-headers \
+        make \
+        python3 \
+      ; \
+      wget "https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION.tar.xz"; \
+      mkir -p /usr/src/node; \
+      tar -xf node-v$NODE_VERSION.tar.xz -C /usr/src/node; \
+      cd /usr/src/node; \
+      ./configure; \
+      make -j$(getconf _NPROCESSORS_ONLN) V=; \
+      make install; \
+      cd /; \
+      rm node-v$NODE_VERSION.tar.xz; \
+      rm -rf /usr/src/node; \
+      apk del .node-build-deps; \
+    fi
 
 #
 # Runtime configuration
