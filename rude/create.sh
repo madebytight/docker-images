@@ -15,7 +15,7 @@ set -e
 if [ -z ${RUBY_VERSION} ]; then read -p 'Ruby version: ' RUBY_VERSION; fi
 if [ -z ${RUBY_CHECKSUM} ]; then read -p 'Ruby checksum: ' RUBY_CHECKSUM; fi
 if [ -z ${NODE_VERSION} ]; then read -p 'Node version: ' NODE_VERSION; fi
-if [ -z ${NODE_CHECKSUM_X64} ]; then read -p 'Node checksum(x64) ' NODE_CHECKSUM_X64; fi
+if [ -z ${NODE_CHECKSUM} ]; then read -p 'Node checksum ' NODE_CHECKSUM; fi
 
 REPOSITORY="madebytight/rude"
 
@@ -26,35 +26,57 @@ NODE_MINOR=`echo $NODE_VERSION | grep -o "[0-9]*.[0-9]*" | head -1`
 DOCKERFILE_FOLDER="$RUBY_MAJOR-$NODE_MAJOR/alpine"
 TEMPLATE="./.template/alpine.Dockerfile"
 
+BUILDER_NAME="madebytight-rude"
+PLATFORMS="linux/amd64,linux/arm64"
+
+echo "-> Create Dockerfile"
 mkdir -p $DOCKERFILE_FOLDER
 sed -r \
     -e 's!%%RUBY_MAJOR%%!'"$RUBY_MAJOR"'!g' \
     -e 's!%%RUBY_MINOR%%!'"$RUBY_VERSION"'!g' \
     -e 's!%%RUBY_CHECKSUM%%!'"$RUBY_CHECKSUM"'!g' \
     -e 's!%%NODE_VERSION%%!'"$NODE_VERSION"'!g' \
-    -e 's!%%NODE_CHECKSUM_X64%%!'"$NODE_CHECKSUM_X64"'!g' \
+    -e 's!%%NODE_CHECKSUM%%!'"$NODE_CHECKSUM"'!g' \
     "$TEMPLATE" > "$DOCKERFILE_FOLDER/Dockerfile"
 
+echo "-> Prepare tags"
 PINNED_TAG="$REPOSITORY:$RUBY_VERSION-$NODE_VERSION-alpine"
-EPHEMERAL_TAGS=("$REPOSITORY:$RUBY_MAJOR-$NODE_MAJOR-alpine" "$REPOSITORY:$RUBY_MAJOR-$NODE_MINOR-alpine")
+EPHEMERAL_TAGS=(
+  "$REPOSITORY:$RUBY_MAJOR-$NODE_MAJOR-alpine"
+  "$REPOSITORY:$RUBY_MAJOR-$NODE_MINOR-alpine"
+)
 
-docker build \
-  -t "$PINNED_TAG" \
-  "$DOCKERFILE_FOLDER"
-docker push $PINNED_TAG
+TAG_ARGS="-t $PINNED_TAG"
 
 for tag in "${EPHEMERAL_TAGS[@]}"; do
-  echo
-  echo
-
-  if [ -z ${ALL_TAGS} ]; then
-    choice=$(confirm "Apply and push $tag?")
-  else
+  if [ "$ALL_TAGS" = true ]; then
     choice=true
+  else
+    choice=$(confirm "   Apply $tag?")
   fi
 
   if $choice; then
-    docker image tag $PINNED_TAG $tag
-    docker push $tag
+    TAG_ARGS="$TAG_ARGS -t $tag"
   fi
 done
+
+if ! docker buildx inspect --bootstrap $BUILDER_NAME 2>/dev/null 1>&2; then
+  echo "-> Create buildx instance"
+  docker buildx create --name $BUILDER_NAME > /dev/null
+else
+  echo "-> buildx instance exists"
+fi
+
+# Make sure the buildx instance is ready
+echo "-> Start buildx instance"
+docker buildx inspect --bootstrap $BUILDER_NAME 2>/dev/null 1>&2
+
+echo "-> Switch buildx instance"
+docker buildx use $BUILDER_NAME
+
+echo "-> Build image"
+docker buildx build \
+  --platform $PLATFORMS \
+  $TAG_ARGS \
+  --push \
+  $DOCKERFILE_FOLDER
