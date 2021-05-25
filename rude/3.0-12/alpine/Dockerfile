@@ -1,7 +1,9 @@
 FROM 'alpine:3.13.1'
 
 #
-# Ruby, build from source - based on https://hub.docker.com/_/ruby
+# Ruby:
+# - Builds from source
+# - Based on https://hub.docker.com/_/ruby
 #
 
 ARG RUBY_MAJOR="3.0"
@@ -78,25 +80,79 @@ RUN set -eux; \
     apk del --no-network .ruby-deps
 
 #
-# Node, download pre-built binary - based on https://hub.docker.com/_/node
+# Node:
+# - Uses pre-built binary for x86_64, otherwise builds from source
+# - Based on https://hub.docker.com/_/node
 #
 
 ARG NODE_VERSION="12.22.1"
-ARG NODE_CHECKSUM_X64="b7c8a2cb26790b4cc21a69ea5896ecb3e88712a35dcd5f3ef1c799214ad1f5da"
 
 RUN set -eux; \
     ARCH="$(apk --print-arch)"; \
-    CHECKSUM=""; \
     if [ $ARCH = "x86_64" ]; then \
-      ARCH="x64"; \
-      CHECKSUM="$NODE_CHECKSUM_X64"; \
-    fi; \
-    NODE_SRC="https://unofficial-builds.nodejs.org/download/release/v$NODE_VERSION/node-v$NODE_VERSION-linux-$ARCH-musl.tar.xz";\
-    wget -O node.tar.xz "$NODE_SRC"; \
-    echo "$CHECKSUM *node.tar.xz" | sha256sum -c; \
-    tar -xJf "node.tar.xz" -C /usr/local --strip-components=1 --no-same-owner; \
-    ln -s /usr/local/bin/node /usr/local/bin/nodejs; \
-    rm node.tar.xz
+      NODE_SRC="https://unofficial-builds.nodejs.org/download/release/v$NODE_VERSION/node-v$NODE_VERSION-linux-x64-musl.tar.xz";\
+      wget -O node.tar.xz "$NODE_SRC"; \
+      echo "b7c8a2cb26790b4cc21a69ea5896ecb3e88712a35dcd5f3ef1c799214ad1f5da *node.tar.xz" | sha256sum -c; \
+      tar -xJf "node.tar.xz" -C /usr/local --strip-components=1 --no-same-owner; \
+      ln -s /usr/local/bin/node /usr/local/bin/nodejs; \
+      rm node.tar.xz; \
+    else \
+      # Install temporary and permanent dependencies
+      apk add --no-cache \
+        libstdc++ \
+      ; \
+      apk add --no-cache --virtual .node-build-deps \
+        binutils-gold \
+        g++ \
+        gcc \
+        gnupg \
+        libgcc \
+        linux-headers \
+        make \
+        python2 \
+        python3 \
+      ; \
+
+      # Add gpg keys
+      for key in \
+        4ED778F539E3634C779C87C6D7062848A1AB005C \
+        94AE36675C464D64BAFA68DD7434390BDBE9B9C5 \
+        74F12602B6F1C4E913FAA37AD3A89613643B6201 \
+        71DCFD284A79C3B38668286BC97EC7A07EDE3FC1 \
+        8FCCA13FEF1D0C2E91008E09770F7A9A5AE15600 \
+        C4F0DFFF4E8C1A8236409D08E73BC641CC11F4C8 \
+        C82FA3AE1CBEDC6BE46B9360C43CEC45C17AB93C \
+        DD8F2338BAE7501E3DD5AC78C273792F7D83545D \
+        A48C2BEE680E841632CD4E44F07496B3EB3C1762 \
+        108F52B48DB57BB0CC439B2997B01419BD92F80A \
+        B9E2F5981AA6E0CD28160D9FF13993A75599653C \
+      ; do \
+        gpg --batch --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys "$key" || \
+        gpg --batch --keyserver hkp://ipv4.pool.sks-keyservers.net --recv-keys "$key" || \
+        gpg --batch --keyserver hkp://pgp.mit.edu:80 --recv-keys "$key" ; \
+      done; \
+
+      # Download and verify source
+      wget "https://nodejs.org/dist/v$NODE_VERSION/SHASUMS256.txt"; \
+      wget "https://nodejs.org/dist/v$NODE_VERSION/SHASUMS256.txt.sig"; \
+      gpg --verify "SHASUMS256.txt.sig" "SHASUMS256.txt"; \
+      wget "https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION.tar.xz"; \
+      grep node-v$NODE_VERSION.tar.xz SHASUMS256.txt | sha256sum -c -; \
+
+      # Unpack and build
+      mkdir -p /usr/src/node; \
+      tar -xJf node-v$NODE_VERSION.tar.xz -C /usr/src/node --strip-components=1; \
+      cd /usr/src/node; \
+      ./configure; \
+      make -j$(getconf _NPROCESSORS_ONLN) V=; \
+      make install; \
+
+      # Cleanup
+      cd /; \
+      rm node-v$NODE_VERSION.tar.xz; \
+      rm -rf /usr/src/node; \
+      apk del .node-build-deps; \
+    fi
 
 #
 # Runtime configuration
