@@ -10,7 +10,11 @@ for domain in $DOMAINS; do
 
   dst="/etc/letsencrypt/live/$folder"
 
+  echo "=== Get certificate for $domain ==="
+  echo "    \$dst: $dst"
+
   if [ -d $dst ]; then
+    echo "    \$dst exists"
     continue;
   elif [[ ${domain:0:2} = "*." ]]; then
     certbot certonly \
@@ -30,4 +34,6 @@ for domain in $DOMAINS; do
         --no-eff-email \
         -d $domain
   fi
+
+  echo ""
 done

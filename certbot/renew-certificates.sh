@@ -15,9 +15,16 @@ for domain in $DOMAINS; do
   dst="/etc/letsencrypt/live/$folder"
   cert="$dst/fullchain.pem"
 
+  echo "=== Renew certificate for $domain ==="
+  echo "    \$dst: $dst"
+  echo "    \$cert: $cert"
+  echo ""
+
   if [ ! -d $dst ]; then
+    echo "    \$dst does not exist"
     continue;
   elif openssl x509 -checkend $expiration -noout -in $cert > /dev/null; then
+    echo "    \$expiration not passed"
     continue;
   elif [[ ${domain:0:2} = "*." ]]; then
     certbot certonly \
@@ -33,4 +40,6 @@ for domain in $DOMAINS; do
         --noninteractive \
         -d $domain
   fi
+
+  echo ""
 done
