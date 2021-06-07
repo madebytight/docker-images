@@ -2,7 +2,7 @@
 set -e
 
 # Certifcate will be renewed if it expires within X days.
-days=7
+days=30
 expiration=$((($days * 24) * 3600))
 
 IFS=","
