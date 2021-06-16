@@ -1,5 +1,4 @@
 #!/usr/bin/env sh
-set -e
 
 # Certifcate will be renewed if it expires within X days.
 days=30
