@@ -7,8 +7,8 @@ FROM 'alpine:3.13.1'
 #
 
 ARG RUBY_MAJOR="2.6"
-ARG RUBY_MINOR="2.6.7"
-ARG RUBY_CHECKSUM="f43ead5626202d5432d2050eeab606e547f0554299cc1e5cf573d45670e59611"
+ARG RUBY_MINOR="2.6.8"
+ARG RUBY_CHECKSUM="8262e4663169c85787fdc9bfbd04d9eb86eb2a4b56d7f98373a8fcaa18e593eb"
 
 ARG RUBY_SRC="https://cache.ruby-lang.org/pub/ruby/${RUBY_MAJOR}/ruby-${RUBY_MINOR}.tar.xz"
 ARG RUBY_DST="ruby-${RUBY_MINOR}"
@@ -85,14 +85,14 @@ RUN set -eux; \
 # - Based on https://hub.docker.com/_/node
 #
 
-ARG NODE_VERSION="12.22.1"
+ARG NODE_VERSION="12.22.6"
 
 RUN set -eux; \
     ARCH="$(apk --print-arch)"; \
     if [ $ARCH = "x86_64" ]; then \
       NODE_SRC="https://unofficial-builds.nodejs.org/download/release/v$NODE_VERSION/node-v$NODE_VERSION-linux-x64-musl.tar.xz";\
       wget -O node.tar.xz "$NODE_SRC"; \
-      echo "b7c8a2cb26790b4cc21a69ea5896ecb3e88712a35dcd5f3ef1c799214ad1f5da *node.tar.xz" | sha256sum -c; \
+      echo "0ce2b97ecbbd84f1a5ed13278ed6845d93c6454d8550730b247a990438dba322 *node.tar.xz" | sha256sum -c; \
       tar -xJf "node.tar.xz" -C /usr/local --strip-components=1 --no-same-owner; \
       ln -s /usr/local/bin/node /usr/local/bin/nodejs; \
       rm node.tar.xz; \
@@ -127,9 +127,8 @@ RUN set -eux; \
         108F52B48DB57BB0CC439B2997B01419BD92F80A \
         B9E2F5981AA6E0CD28160D9FF13993A75599653C \
       ; do \
-        gpg --batch --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys "$key" || \
-        gpg --batch --keyserver hkp://ipv4.pool.sks-keyservers.net --recv-keys "$key" || \
-        gpg --batch --keyserver hkp://pgp.mit.edu:80 --recv-keys "$key" ; \
+        gpg --batch --keyserver hkps://keys.openpgp.org --recv-keys "$key" || \
+        gpg --batch --keyserver keyserver.ubuntu.com --recv-keys "$key" ; \
       done; \
 
       # Download and verify source
