@@ -1,0 +1,32 @@
+#!/usr/bin/env ruby
+require 'fileutils'
+require 'yaml'
+
+FileUtils.chdir(__dir__) do
+  versions = YAML.load_file('versions.yml')
+  base_images = versions['base']
+  ruby_versions = versions['ruby']
+  node_versions = versions['node']
+
+  base_images.each do |base_image|
+    ruby_versions.each do |ruby_version, ruby_checksum|
+      node_versions.each do |node_version, node_checksum|
+        puts "#{base_image}: Ruby #{ruby_version}, Node #{node_version}"
+        puts "\n\n\n"
+
+        system(
+          {
+            'RUBY_VERSION' => ruby_version,
+            'RUBY_CHECKSUM' => ruby_checksum,
+            'NODE_VERSION' => node_version,
+            'NODE_CHECKSUM' => node_checksum,
+            'ALL_TAGS' => true.to_s
+          },
+          "echo \"RUBY_VERSION: $RUBY_VERSION\nRUBY_CHECKSUM: $RUBY_CHECKSUM\nNODE_VERSION: $NODE_VERSION\nNODE_CHECKSUM: $NODE_CHECKSUM\nALL_TAGS: $ALL_TAGS\""
+        )
+
+        puts "\n\n\n"
+      end
+    end
+  end
+end
