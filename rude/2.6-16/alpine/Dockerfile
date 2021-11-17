@@ -85,14 +85,14 @@ RUN set -eux; \
 # - Based on https://hub.docker.com/_/node
 #
 
-ARG NODE_VERSION="14.18.1"
+ARG NODE_VERSION="16.9.1"
 
 RUN set -eux; \
     ARCH="$(apk --print-arch)"; \
     if [ $ARCH = "x86_64" ]; then \
       NODE_SRC="https://unofficial-builds.nodejs.org/download/release/v$NODE_VERSION/node-v$NODE_VERSION-linux-x64-musl.tar.xz";\
       wget -O node.tar.xz "$NODE_SRC"; \
-      echo "8d6d2b71b76dc31bbcf12827b9e60212bc04a556c3498e75708d38f5eb4ae6eb *node.tar.xz" | sha256sum -c; \
+      echo "528061413f47f9cd87feb43941a74768cabcbb7a35395b3680a4b89efa1f7573 *node.tar.xz" | sha256sum -c; \
       tar -xJf "node.tar.xz" -C /usr/local --strip-components=1 --no-same-owner; \
       ln -s /usr/local/bin/node /usr/local/bin/nodejs; \
       rm node.tar.xz; \

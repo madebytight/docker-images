@@ -6,9 +6,9 @@ FROM 'alpine:3.13.1'
 # - Based on https://hub.docker.com/_/ruby
 #
 
-ARG RUBY_MAJOR="2.6"
-ARG RUBY_MINOR="2.6.8"
-ARG RUBY_CHECKSUM="8262e4663169c85787fdc9bfbd04d9eb86eb2a4b56d7f98373a8fcaa18e593eb"
+ARG RUBY_MAJOR="3.1"
+ARG RUBY_MINOR="3.1.0-preview1"
+ARG RUBY_CHECKSUM="86a836ad42f6a7a469fce71ffec48fd3184af55bf79e488b568a4f64adee551d"
 
 ARG RUBY_SRC="https://cache.ruby-lang.org/pub/ruby/${RUBY_MAJOR}/ruby-${RUBY_MINOR}.tar.xz"
 ARG RUBY_DST="ruby-${RUBY_MINOR}"
