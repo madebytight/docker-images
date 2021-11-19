@@ -1,83 +1,4 @@
-FROM 'alpine:3.13.1'
-
-#
-# Ruby:
-# - Builds from source
-# - Based on https://hub.docker.com/_/ruby
-#
-
-ARG RUBY_MAJOR="2.7"
-ARG RUBY_MINOR="2.7.4"
-ARG RUBY_CHECKSUM="2a80824e0ad6100826b69b9890bf55cfc4cf2b61a1e1330fccbcb30c46cef8d7"
-
-ARG RUBY_SRC="https://cache.ruby-lang.org/pub/ruby/${RUBY_MAJOR}/ruby-${RUBY_MINOR}.tar.xz"
-ARG RUBY_DST="ruby-${RUBY_MINOR}"
-
-RUN apk add --no-cache \
-      gmp-dev
-
-# Disable gem documentation
-RUN set -eux; \
-    mkdir -p /usr/local/etc; \
-    { \
-      echo 'install: --no-document'; \
-      echo 'update: --no-document'; \
-    } >> /usr/local/etc/gemrc
-
-# Download & build
-RUN set -eux; \
-    apk add --no-cache --virtual .ruby-deps \
-      autoconf \
-      bison \
-      bzip2 \
-      bzip2-dev \
-      ca-certificates \
-      coreutils \
-      dpkg-dev dpkg \
-      gcc \
-      gdbm-dev \
-      glib-dev \
-      libc-dev \
-      libffi-dev \
-      libxml2-dev \
-      libxslt-dev \
-      linux-headers \
-      make \
-      ncurses-dev \
-      openssl \
-      openssl-dev \
-      patch \
-      procps \
-      readline-dev \
-      ruby \
-      tar \
-      xz \
-      yaml-dev \
-      zlib-dev \
-    ; \
-
-    # Download and unpack source
-    wget -O ruby.tar.xz $RUBY_SRC; \
-    echo "$RUBY_CHECKSUM *ruby.tar.xz" | sha256sum -c; \
-    mkdir -p /usr/src/ruby; \
-    tar -xJf ruby.tar.xz -C /usr/src/ruby --strip-components=1; \
-    rm ruby.tar.xz; \
-
-    # Build
-    cd /usr/src/ruby; \
-    autoconf; \
-    export ac_cv_func_isnan=yes ac_cv_func_isinf=yes; \
-    ./configure \
-      --build=$(dpkg-architecture --query DEB_BUILD_GNU_TYPE) \
-      --disable-install-doc \
-      --enable-shared; \
-    make -j $(nproc); \
-    make install; \
-
-    # Cleanup
-    cd /; \
-    rm -r /usr/src/ruby; \
-    apk del --no-network .ruby-deps
+FROM 'alpine:3.14.3'
 
 #
 # Node:
@@ -152,6 +73,86 @@ RUN set -eux; \
       rm -rf /usr/src/node; \
       apk del .node-build-deps; \
     fi
+
+#
+# Ruby:
+# - Builds from source
+# - Based on https://hub.docker.com/_/ruby
+#
+
+ARG RUBY_MAJOR="2.7"
+ARG RUBY_MINOR="2.7.4"
+ARG RUBY_CHECKSUM="2a80824e0ad6100826b69b9890bf55cfc4cf2b61a1e1330fccbcb30c46cef8d7"
+
+ARG RUBY_SRC="https://cache.ruby-lang.org/pub/ruby/${RUBY_MAJOR}/ruby-${RUBY_MINOR}.tar.xz"
+ARG RUBY_DST="ruby-${RUBY_MINOR}"
+
+RUN apk add --no-cache \
+      gmp-dev
+
+# Disable gem documentation
+RUN set -eux; \
+    mkdir -p /usr/local/etc; \
+    { \
+      echo 'install: --no-document'; \
+      echo 'update: --no-document'; \
+    } >> /usr/local/etc/gemrc
+
+# Download & build
+RUN set -eux; \
+    apk add --no-cache --virtual .ruby-deps \
+      autoconf \
+      bison \
+      bzip2 \
+      bzip2-dev \
+      ca-certificates \
+      coreutils \
+      dpkg-dev dpkg \
+      g++ \
+      gcc \
+      gdbm-dev \
+      glib-dev \
+      libc-dev \
+      libffi-dev \
+      libxml2-dev \
+      libxslt-dev \
+      linux-headers \
+      make \
+      ncurses-dev \
+      openssl \
+      openssl-dev \
+      patch \
+      procps \
+      readline-dev \
+      ruby \
+      tar \
+      xz \
+      yaml-dev \
+      zlib-dev \
+    ; \
+
+    # Download and unpack source
+    wget -O ruby.tar.xz $RUBY_SRC; \
+    echo "$RUBY_CHECKSUM *ruby.tar.xz" | sha256sum -c; \
+    mkdir -p /usr/src/ruby; \
+    tar -xJf ruby.tar.xz -C /usr/src/ruby --strip-components=1; \
+    rm ruby.tar.xz; \
+
+    # Build
+    cd /usr/src/ruby; \
+    autoconf; \
+    export ac_cv_func_isnan=yes ac_cv_func_isinf=yes; \
+    ./configure \
+      --build=$(dpkg-architecture --query DEB_BUILD_GNU_TYPE) \
+      --disable-install-doc \
+      --enable-shared; \
+    make -j $(nproc); \
+    make install; \
+
+    # Cleanup
+    cd /; \
+    rm -r /usr/src/ruby; \
+    apk del --no-network .ruby-deps
 
 #
 # Runtime configuration
