@@ -1,28 +1,49 @@
 #!/usr/bin/env ruby
 require 'fileutils'
 require 'yaml'
+require 'uri'
+require 'net/http'
+require 'json'
 
-FileUtils.chdir(__dir__) do
-  versions = YAML.load_file('versions.yml')
-  base_images = versions['base']
-  ruby_versions = versions['ruby']
-  node_versions = versions['node']
+require 'pry'
 
-  base_images.each do |base_image|
+FileUtils.chdir(__dir__)
+
+tags ||= if ARGV.include?('--no-cache')
+           []
+         else
+           url = URI('https://hub.docker.com/v2/repositories/madebytight/rude/tags?page_size=1000')
+           response = Net::HTTP.get_response(url)
+
+           JSON.parse(response.body)['results'].map { |i| i['name'] }
+         end
+
+YAML.load_file('versions.yml').each do |base_image, base_versions|
+  base_versions.each do |base_version, versions|
+    ruby_versions = versions['ruby']
+    node_versions = versions['node']
+
     ruby_versions.each do |ruby_version, ruby_checksum|
       node_versions.each do |node_version, node_checksum|
-        puts "#{base_image}: Ruby #{ruby_version}, Node #{node_version}"
-        puts "\n\n\n"
+        tag = "#{ruby_version}-#{node_version}-#{base_image}#{base_version}"
+
+        if tags.include?(tag)
+          puts "#{tag}: SKIP"
+          next
+        end
+
+        puts "#{tag}: BUILD"
 
         system(
           {
+            'BASE_IMAGE' => "#{base_image}:#{base_version}",
             'RUBY_VERSION' => ruby_version,
             'RUBY_CHECKSUM' => ruby_checksum,
             'NODE_VERSION' => node_version,
             'NODE_CHECKSUM' => node_checksum,
             'ALL_TAGS' => true.to_s
           },
-          "echo \"RUBY_VERSION: $RUBY_VERSION\nRUBY_CHECKSUM: $RUBY_CHECKSUM\nNODE_VERSION: $NODE_VERSION\nNODE_CHECKSUM: $NODE_CHECKSUM\nALL_TAGS: $ALL_TAGS\""
+          './create.sh'
         )
 
         puts "\n\n\n"
