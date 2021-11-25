@@ -1,7 +1,7 @@
 alpine:
   '3.13.7':
     ruby:
-      '2.6.8': '8262e4663169c85787fdc9bfbd04d9eb86eb2a4b56d7f98373a8fcaa18e593eb'
+      '2.6.9': '6a041d82ae6e0f02ccb1465e620d94a7196489d8a13d6018a160da42ebc1eece'
     node:
       '12.22.7': 'c8672a664087e96b4e2804caf77a0aaa8c1375ae6b378edb220a678155383a81'
       '14.18.1': '8d6d2b71b76dc31bbcf12827b9e60212bc04a556c3498e75708d38f5eb4ae6eb'
@@ -9,8 +9,8 @@ alpine:
 
   '3.14.3':
     ruby:
-      '2.7.4':          '2a80824e0ad6100826b69b9890bf55cfc4cf2b61a1e1330fccbcb30c46cef8d7'
-      '3.0.2':          '570e7773100f625599575f363831166d91d49a1ab97d3ab6495af44774155c40'
+      '2.7.5':          'd216d95190eaacf3bf165303747b02ff13f10b6cfab67a9031b502a49512b516'
+      '3.0.3':          '88cc7f0f021f15c4cd62b1f922e3a401697f7943551fe45b1fdf4f2417a17a9c'
       '3.1.0-preview1': '86a836ad42f6a7a469fce71ffec48fd3184af55bf79e488b568a4f64adee551d'
 
     node:
