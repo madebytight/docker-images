@@ -1,3 +1,3 @@
 # certbot
 
-Get and renew SSL certificated from Let's Encrypt.
+Get and renew SSL certificates from Let's Encrypt.
