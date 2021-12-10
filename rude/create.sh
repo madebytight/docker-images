@@ -52,7 +52,7 @@ EPHEMERAL_BASES=(
 EPHEMERAL_TAGS=()
 for base in "${EPHEMERAL_BASES[@]}"; do
   for ruby in $RUBY_VERSION $RUBY_MAJOR; do
-    for node in $NODE_MINOR $NODE_MAJOR; do
+    for node in $NODE_VERSION $NODE_MINOR $NODE_MAJOR; do
       EPHEMERAL_TAGS+=("$REPOSITORY:$ruby-$node-$base")
     done
   done
