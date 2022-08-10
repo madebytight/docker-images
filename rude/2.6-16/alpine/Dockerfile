@@ -6,14 +6,14 @@ FROM 'alpine:3.13.7'
 # - Based on https://hub.docker.com/_/node
 #
 
-ARG NODE_VERSION="16.15.1"
+ARG NODE_VERSION="16.16.0"
 
 RUN set -eux; \
     ARCH="$(apk --print-arch)"; \
     if [ $ARCH = "x86_64" ]; then \
       NODE_SRC="https://unofficial-builds.nodejs.org/download/release/v$NODE_VERSION/node-v$NODE_VERSION-linux-x64-musl.tar.xz";\
       wget -O node.tar.xz "$NODE_SRC"; \
-      echo "3acef00c21ca044a74710a56492c40d715ea5a707ce8629d6df2415f3cf89fec *node.tar.xz" | sha256sum -c; \
+      echo "2b74f0baaaa931ffc46573874a7d7435b642d28f1f283104ac297499fba99f0a *node.tar.xz" | sha256sum -c; \
       tar -xJf "node.tar.xz" -C /usr/local --strip-components=1 --no-same-owner; \
       ln -s /usr/local/bin/node /usr/local/bin/nodejs; \
       rm node.tar.xz; \
