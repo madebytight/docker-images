@@ -9,13 +9,21 @@ require 'pry'
 
 FileUtils.chdir(__dir__)
 
+def get_tags(page = 1)
+  url = URI("https://hub.docker.com/v2/repositories/madebytight/rude/tags?page=#{page}&page_size=100")
+  response = Net::HTTP.get_response(url)
+  body = JSON.parse(response.body)
+  tags = body['results'].map { |i| i['name'] }
+
+  return tags if body['next'].nil?
+
+  tags + get_tags(page + 1)
+end
+
 tags ||= if ARGV.include?('--no-cache')
            []
          else
-           url = URI('https://hub.docker.com/v2/repositories/madebytight/rude/tags?page_size=1000')
-           response = Net::HTTP.get_response(url)
-
-           JSON.parse(response.body)['results'].map { |i| i['name'] }
+           get_tags
          end
 
 YAML.load_file('versions.yml').each do |base_image, base_versions|
