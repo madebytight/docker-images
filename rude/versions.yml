@@ -1,12 +1,4 @@
 alpine:
-  '3.13.7':
-    ruby:
-      '2.6.10': '5fd8ded51321b88fdc9c1b4b0eb1b951d2eddbc293865da0151612c2e814c1f2'
-    node:
-      '12.22.12': 'e5eb941bd3d5b7ab197e27c353049e6e8fd03d39c4949ea393f5af4ba8ef020a'
-      '14.21.1':  '0fc7c18a1fa7aa6b39ac7b11ba2e56fa12ab1c4d3b4bb32f9c4ac3f7178d613c'
-      '16.18.1':  'ba6f8e66b23518ff4ff465814f781fd48b196a1cd77a9942ca5c7857715253a9'
-
   '3.14.3':
     ruby:
       '2.7.7': 'b38dff2e1f8ce6e5b7d433f8758752987a6b2adfd9bc7571dbc42ea5d04e3e4c'
