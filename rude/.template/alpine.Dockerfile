@@ -30,7 +30,6 @@ RUN set -eux; \
         libgcc \
         linux-headers \
         make \
-        python2 \
         python3 \
       ; \
 
@@ -98,35 +97,37 @@ RUN set -eux; \
 
 # Download & build
 RUN set -eux; \
+    apk add --no-cache \
+      bzip2 \
+      ca-certificates \
+      gcc \
+      libffi-dev \
+      make \
+      openssl \
+      procps \
+      yaml-dev \
+      zlib-dev \
+    ; \
     apk add --no-cache --virtual .ruby-deps \
       autoconf \
       bison \
-      bzip2 \
       bzip2-dev \
-      ca-certificates \
       coreutils \
       dpkg-dev dpkg \
       g++ \
-      gcc \
       gdbm-dev \
       glib-dev \
       libc-dev \
-      libffi-dev \
       libxml2-dev \
       libxslt-dev \
       linux-headers \
-      make \
       ncurses-dev \
-      openssl \
       openssl-dev \
       patch \
-      procps \
       readline-dev \
       ruby \
       tar \
       xz \
-      yaml-dev \
-      zlib-dev \
     ; \
 
     # Download and unpack source
@@ -143,7 +144,8 @@ RUN set -eux; \
     ./configure \
       --build=$(dpkg-architecture --query DEB_BUILD_GNU_TYPE) \
       --disable-install-doc \
-      --enable-shared; \
+      --enable-shared \
+    ; \
     make -j $(nproc); \
     make install; \
 
@@ -160,18 +162,10 @@ RUN set -eux; \
 RUN set -eux; \
     apk add --no-cache \
       build-base \
-      bzip2 \
-      ca-certificates \
-      gcc \
       git \
       libc-dev \
-      libffi-dev \
-      make \
       postgresql-dev \
-      procps \
       tzdata \
-      yaml-dev \
-      zlib-dev \
     ;
 
 # Install bundler

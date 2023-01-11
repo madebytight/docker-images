@@ -1,4 +1,4 @@
-FROM 'alpine:3.14.3'
+FROM 'alpine:3.16.3'
 
 #
 # Node:
@@ -6,14 +6,14 @@ FROM 'alpine:3.14.3'
 # - Based on https://hub.docker.com/_/node
 #
 
-ARG NODE_VERSION="16.18.1"
+ARG NODE_VERSION="16.19.0"
 
 RUN set -eux; \
     ARCH="$(apk --print-arch)"; \
     if [ $ARCH = "x86_64" ]; then \
       NODE_SRC="https://unofficial-builds.nodejs.org/download/release/v$NODE_VERSION/node-v$NODE_VERSION-linux-x64-musl.tar.xz";\
       wget -O node.tar.xz "$NODE_SRC"; \
-      echo "ba6f8e66b23518ff4ff465814f781fd48b196a1cd77a9942ca5c7857715253a9 *node.tar.xz" | sha256sum -c; \
+      echo "f5817883eb3009972a031d635ea71ed8377808a6e831ae1c72e063e888cdd318 *node.tar.xz" | sha256sum -c; \
       tar -xJf "node.tar.xz" -C /usr/local --strip-components=1 --no-same-owner; \
       ln -s /usr/local/bin/node /usr/local/bin/nodejs; \
       rm node.tar.xz; \
@@ -30,7 +30,6 @@ RUN set -eux; \
         libgcc \
         linux-headers \
         make \
-        python2 \
         python3 \
       ; \
 
@@ -98,35 +97,37 @@ RUN set -eux; \
 
 # Download & build
 RUN set -eux; \
+    apk add --no-cache \
+      bzip2 \
+      ca-certificates \
+      gcc \
+      libffi-dev \
+      make \
+      openssl \
+      procps \
+      yaml-dev \
+      zlib-dev \
+    ; \
     apk add --no-cache --virtual .ruby-deps \
       autoconf \
       bison \
-      bzip2 \
       bzip2-dev \
-      ca-certificates \
       coreutils \
       dpkg-dev dpkg \
       g++ \
-      gcc \
       gdbm-dev \
       glib-dev \
       libc-dev \
-      libffi-dev \
       libxml2-dev \
       libxslt-dev \
       linux-headers \
-      make \
       ncurses-dev \
-      openssl \
       openssl-dev \
       patch \
-      procps \
       readline-dev \
       ruby \
       tar \
       xz \
-      yaml-dev \
-      zlib-dev \
     ; \
 
     # Download and unpack source
@@ -143,7 +144,8 @@ RUN set -eux; \
     ./configure \
       --build=$(dpkg-architecture --query DEB_BUILD_GNU_TYPE) \
       --disable-install-doc \
-      --enable-shared; \
+      --enable-shared \
+    ; \
     make -j $(nproc); \
     make install; \
 
@@ -160,18 +162,10 @@ RUN set -eux; \
 RUN set -eux; \
     apk add --no-cache \
       build-base \
-      bzip2 \
-      ca-certificates \
-      gcc \
       git \
       libc-dev \
-      libffi-dev \
-      make \
       postgresql-dev \
-      procps \
       tzdata \
-      yaml-dev \
-      zlib-dev \
     ;
 
 # Install bundler

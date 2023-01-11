@@ -1,4 +1,4 @@
-FROM 'alpine:3.14.3'
+FROM 'alpine:3.17.0'
 
 #
 # Node:
@@ -30,7 +30,6 @@ RUN set -eux; \
         libgcc \
         linux-headers \
         make \
-        python2 \
         python3 \
       ; \
 
@@ -54,22 +53,7 @@ RUN set -eux; \
       wget "https://nodejs.org/dist/v$NODE_VERSION/SHASUMS256.txt"; \
       wget "https://nodejs.org/dist/v$NODE_VERSION/SHASUMS256.txt.sig"; \
       gpg --verify "SHASUMS256.txt.sig" "SHASUMS256.txt"; \
-      wget "https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION.tar.xz"; \
-      grep node-v$NODE_VERSION.tar.xz SHASUMS256.txt | sha256sum -c -; \
 
-      # Unpack and build
-      mkdir -p /usr/src/node; \
-      tar -xJf node-v$NODE_VERSION.tar.xz -C /usr/src/node --strip-components=1; \
-      cd /usr/src/node; \
-      ./configure; \
-      make -j$(getconf _NPROCESSORS_ONLN) V=; \
-      make install; \
-
-      # Cleanup
-      cd /; \
-      rm node-v$NODE_VERSION.tar.xz; \
-      rm -rf /usr/src/node; \
-      apk del .node-build-deps; \
     fi
 
 #

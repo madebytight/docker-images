@@ -51,7 +51,8 @@ YAML.load_file('versions.yml').each do |base_image, base_versions|
             'NODE_CHECKSUM' => node_checksum,
             'ALL_TAGS' => true.to_s
           },
-          './create.sh'
+          './create.sh',
+          exception: true
         )
 
         puts "\n\n\n"
