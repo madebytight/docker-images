@@ -1,4 +1,4 @@
-FROM 'alpine:3.17.1'
+FROM 'alpine:3.17.3'
 
 #
 # Node:
@@ -6,14 +6,14 @@ FROM 'alpine:3.17.1'
 # - Based on https://hub.docker.com/_/node
 #
 
-ARG NODE_VERSION="16.19.1"
+ARG NODE_VERSION="16.20.0"
 
 RUN set -eux; \
     ARCH="$(apk --print-arch)"; \
     if [ $ARCH = "x86_64" ]; then \
       NODE_SRC="https://unofficial-builds.nodejs.org/download/release/v$NODE_VERSION/node-v$NODE_VERSION-linux-x64-musl.tar.xz";\
       wget -O node.tar.xz "$NODE_SRC"; \
-      echo "f701dbe93da8be3198d3b6a2ba0044c2f5d142b3acabefb7a3ffeb31245b88df *node.tar.xz" | sha256sum -c; \
+      echo "b3f80fe7d0f1af6fe25ffedc7237ca519965d08fc800eab29cf45cd5b90cdb26 *node.tar.xz" | sha256sum -c; \
       tar -xJf "node.tar.xz" -C /usr/local --strip-components=1 --no-same-owner; \
       ln -s /usr/local/bin/node /usr/local/bin/nodejs; \
       rm node.tar.xz; \
@@ -78,8 +78,8 @@ RUN set -eux; \
 #
 
 ARG RUBY_MAJOR="3.1"
-ARG RUBY_MINOR="3.1.3"
-ARG RUBY_CHECKSUM="4ee161939826bcdfdafa757cf8e293a7f14e357f62be7144f040335cc8c7371a"
+ARG RUBY_MINOR="3.1.4"
+ARG RUBY_CHECKSUM="1b6d6010e76036c937b9671f4752f065aeca800a6c664f71f6c9a699453af94f"
 
 ARG RUBY_SRC="https://cache.ruby-lang.org/pub/ruby/${RUBY_MAJOR}/ruby-${RUBY_MINOR}.tar.xz"
 ARG RUBY_DST="ruby-${RUBY_MINOR}"

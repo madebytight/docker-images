@@ -1,4 +1,4 @@
-FROM 'alpine:3.16.3'
+FROM 'alpine:3.16.5'
 
 #
 # Node:
@@ -78,8 +78,8 @@ RUN set -eux; \
 #
 
 ARG RUBY_MAJOR="2.7"
-ARG RUBY_MINOR="2.7.7"
-ARG RUBY_CHECKSUM="b38dff2e1f8ce6e5b7d433f8758752987a6b2adfd9bc7571dbc42ea5d04e3e4c"
+ARG RUBY_MINOR="2.7.8"
+ARG RUBY_CHECKSUM="f22f662da504d49ce2080e446e4bea7008cee11d5ec4858fc69000d0e5b1d7fb"
 
 ARG RUBY_SRC="https://cache.ruby-lang.org/pub/ruby/${RUBY_MAJOR}/ruby-${RUBY_MINOR}.tar.xz"
 ARG RUBY_DST="ruby-${RUBY_MINOR}"
