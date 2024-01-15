@@ -1,4 +1,4 @@
-FROM 'alpine:3.16.5'
+FROM 'alpine:3.19.0'
 
 #
 # Node:
@@ -6,14 +6,14 @@ FROM 'alpine:3.16.5'
 # - Based on https://hub.docker.com/_/node
 #
 
-ARG NODE_VERSION="18.17.0"
+ARG NODE_VERSION="20.11.0"
 
 RUN set -eux; \
     ARCH="$(apk --print-arch)"; \
     if [ $ARCH = "x86_64" ]; then \
       NODE_SRC="https://unofficial-builds.nodejs.org/download/release/v$NODE_VERSION/node-v$NODE_VERSION-linux-x64-musl.tar.xz";\
       wget -O node.tar.xz "$NODE_SRC"; \
-      echo "8797aaf41e34e7c145ebc33b3184e5757696dc7b2eb2d0f7ec5dc748efab2297 *node.tar.xz" | sha256sum -c; \
+      echo "a8bec39586538896715be7a2ca7ef08727a58ad94d25876c5db11cafacff4c37 *node.tar.xz" | sha256sum -c; \
       tar -xJf "node.tar.xz" -C /usr/local --strip-components=1 --no-same-owner; \
       ln -s /usr/local/bin/node /usr/local/bin/nodejs; \
       rm node.tar.xz; \
@@ -32,7 +32,7 @@ RUN set -eux; \
         make \
         python3 \
       ; \
-
+      \
       # Add gpg keys
       for key in \
         4ED778F539E3634C779C87C6D7062848A1AB005C \
@@ -48,14 +48,14 @@ RUN set -eux; \
         gpg --batch --keyserver hkps://keys.openpgp.org --recv-keys "$key" || \
         gpg --batch --keyserver keyserver.ubuntu.com --recv-keys "$key" ; \
       done; \
-
+      \
       # Download and verify source
       wget "https://nodejs.org/dist/v$NODE_VERSION/SHASUMS256.txt"; \
       wget "https://nodejs.org/dist/v$NODE_VERSION/SHASUMS256.txt.sig"; \
       gpg --verify "SHASUMS256.txt.sig" "SHASUMS256.txt"; \
       wget "https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION.tar.xz"; \
       grep node-v$NODE_VERSION.tar.xz SHASUMS256.txt | sha256sum -c -; \
-
+      \
       # Unpack and build
       mkdir -p /usr/src/node; \
       tar -xJf node-v$NODE_VERSION.tar.xz -C /usr/src/node --strip-components=1; \
@@ -63,7 +63,7 @@ RUN set -eux; \
       ./configure; \
       make -j$(getconf _NPROCESSORS_ONLN) V=; \
       make install; \
-
+      \
       # Cleanup
       cd /; \
       rm node-v$NODE_VERSION.tar.xz; \
@@ -77,9 +77,9 @@ RUN set -eux; \
 # - Based on https://hub.docker.com/_/ruby
 #
 
-ARG RUBY_MAJOR="2.7"
-ARG RUBY_MINOR="2.7.8"
-ARG RUBY_CHECKSUM="f22f662da504d49ce2080e446e4bea7008cee11d5ec4858fc69000d0e5b1d7fb"
+ARG RUBY_MAJOR="3.1"
+ARG RUBY_MINOR="3.1.4"
+ARG RUBY_CHECKSUM="1b6d6010e76036c937b9671f4752f065aeca800a6c664f71f6c9a699453af94f"
 
 ARG RUBY_SRC="https://cache.ruby-lang.org/pub/ruby/${RUBY_MAJOR}/ruby-${RUBY_MINOR}.tar.xz"
 ARG RUBY_DST="ruby-${RUBY_MINOR}"
@@ -129,14 +129,14 @@ RUN set -eux; \
       tar \
       xz \
     ; \
-
+    \
     # Download and unpack source
     wget -O ruby.tar.xz $RUBY_SRC; \
     echo "$RUBY_CHECKSUM *ruby.tar.xz" | sha256sum -c; \
     mkdir -p /usr/src/ruby; \
     tar -xJf ruby.tar.xz -C /usr/src/ruby --strip-components=1; \
     rm ruby.tar.xz; \
-
+    \
     # Build
     cd /usr/src/ruby; \
     autoconf; \
@@ -148,7 +148,7 @@ RUN set -eux; \
     ; \
     make -j $(nproc); \
     make install; \
-
+    \
     # Cleanup
     cd /; \
     rm -r /usr/src/ruby; \

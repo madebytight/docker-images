@@ -32,7 +32,7 @@ RUN set -eux; \
         make \
         python3 \
       ; \
-
+      \
       # Add gpg keys
       for key in \
         4ED778F539E3634C779C87C6D7062848A1AB005C \
@@ -48,14 +48,14 @@ RUN set -eux; \
         gpg --batch --keyserver hkps://keys.openpgp.org --recv-keys "$key" || \
         gpg --batch --keyserver keyserver.ubuntu.com --recv-keys "$key" ; \
       done; \
-
+      \
       # Download and verify source
       wget "https://nodejs.org/dist/v$NODE_VERSION/SHASUMS256.txt"; \
       wget "https://nodejs.org/dist/v$NODE_VERSION/SHASUMS256.txt.sig"; \
       gpg --verify "SHASUMS256.txt.sig" "SHASUMS256.txt"; \
       wget "https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION.tar.xz"; \
       grep node-v$NODE_VERSION.tar.xz SHASUMS256.txt | sha256sum -c -; \
-
+      \
       # Unpack and build
       mkdir -p /usr/src/node; \
       tar -xJf node-v$NODE_VERSION.tar.xz -C /usr/src/node --strip-components=1; \
@@ -63,7 +63,7 @@ RUN set -eux; \
       ./configure; \
       make -j$(getconf _NPROCESSORS_ONLN) V=; \
       make install; \
-
+      \
       # Cleanup
       cd /; \
       rm node-v$NODE_VERSION.tar.xz; \
@@ -129,14 +129,14 @@ RUN set -eux; \
       tar \
       xz \
     ; \
-
+    \
     # Download and unpack source
     wget -O ruby.tar.xz $RUBY_SRC; \
     echo "$RUBY_CHECKSUM *ruby.tar.xz" | sha256sum -c; \
     mkdir -p /usr/src/ruby; \
     tar -xJf ruby.tar.xz -C /usr/src/ruby --strip-components=1; \
     rm ruby.tar.xz; \
-
+    \
     # Build
     cd /usr/src/ruby; \
     autoconf; \
@@ -148,7 +148,7 @@ RUN set -eux; \
     ; \
     make -j $(nproc); \
     make install; \
-
+    \
     # Cleanup
     cd /; \
     rm -r /usr/src/ruby; \

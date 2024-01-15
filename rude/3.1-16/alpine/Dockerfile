@@ -1,4 +1,4 @@
-FROM 'alpine:3.17.3'
+FROM 'alpine:3.19.0'
 
 #
 # Node:
@@ -6,14 +6,14 @@ FROM 'alpine:3.17.3'
 # - Based on https://hub.docker.com/_/node
 #
 
-ARG NODE_VERSION="16.20.1"
+ARG NODE_VERSION="16.20.2"
 
 RUN set -eux; \
     ARCH="$(apk --print-arch)"; \
     if [ $ARCH = "x86_64" ]; then \
       NODE_SRC="https://unofficial-builds.nodejs.org/download/release/v$NODE_VERSION/node-v$NODE_VERSION-linux-x64-musl.tar.xz";\
       wget -O node.tar.xz "$NODE_SRC"; \
-      echo "320cb39e6d3cab1682c6fd97ae9e4e748783143262cc6ff96c93a4f44e818404 *node.tar.xz" | sha256sum -c; \
+      echo "98ab25f0c0cab5eeb2dd827b0ba67e1067e59fd9300383b39ebde735fcb7076c *node.tar.xz" | sha256sum -c; \
       tar -xJf "node.tar.xz" -C /usr/local --strip-components=1 --no-same-owner; \
       ln -s /usr/local/bin/node /usr/local/bin/nodejs; \
       rm node.tar.xz; \
@@ -32,7 +32,7 @@ RUN set -eux; \
         make \
         python3 \
       ; \
-
+      \
       # Add gpg keys
       for key in \
         4ED778F539E3634C779C87C6D7062848A1AB005C \
@@ -48,14 +48,14 @@ RUN set -eux; \
         gpg --batch --keyserver hkps://keys.openpgp.org --recv-keys "$key" || \
         gpg --batch --keyserver keyserver.ubuntu.com --recv-keys "$key" ; \
       done; \
-
+      \
       # Download and verify source
       wget "https://nodejs.org/dist/v$NODE_VERSION/SHASUMS256.txt"; \
       wget "https://nodejs.org/dist/v$NODE_VERSION/SHASUMS256.txt.sig"; \
       gpg --verify "SHASUMS256.txt.sig" "SHASUMS256.txt"; \
       wget "https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION.tar.xz"; \
       grep node-v$NODE_VERSION.tar.xz SHASUMS256.txt | sha256sum -c -; \
-
+      \
       # Unpack and build
       mkdir -p /usr/src/node; \
       tar -xJf node-v$NODE_VERSION.tar.xz -C /usr/src/node --strip-components=1; \
@@ -63,7 +63,7 @@ RUN set -eux; \
       ./configure; \
       make -j$(getconf _NPROCESSORS_ONLN) V=; \
       make install; \
-
+      \
       # Cleanup
       cd /; \
       rm node-v$NODE_VERSION.tar.xz; \
@@ -129,14 +129,14 @@ RUN set -eux; \
       tar \
       xz \
     ; \
-
+    \
     # Download and unpack source
     wget -O ruby.tar.xz $RUBY_SRC; \
     echo "$RUBY_CHECKSUM *ruby.tar.xz" | sha256sum -c; \
     mkdir -p /usr/src/ruby; \
     tar -xJf ruby.tar.xz -C /usr/src/ruby --strip-components=1; \
     rm ruby.tar.xz; \
-
+    \
     # Build
     cd /usr/src/ruby; \
     autoconf; \
@@ -148,7 +148,7 @@ RUN set -eux; \
     ; \
     make -j $(nproc); \
     make install; \
-
+    \
     # Cleanup
     cd /; \
     rm -r /usr/src/ruby; \
