@@ -13,7 +13,7 @@ RUN set -eux; \
     if [ $ARCH = "x86_64" ]; then \
       NODE_SRC="https://unofficial-builds.nodejs.org/download/release/v$NODE_VERSION/node-v$NODE_VERSION-linux-x64-musl.tar.xz";\
       wget -O node.tar.xz "$NODE_SRC"; \
-      echo "98ab25f0c0cab5eeb2dd827b0ba67e1067e59fd9300383b39ebde735fcb7076c *node.tar.xz" | sha256sum -c; \
+      echo "d2df78a192bd78b958e19a77821916a38def5e9e46c0c9a0989fdf5eb6c14a7e *node.tar.xz" | sha256sum -c; \
       tar -xJf "node.tar.xz" -C /usr/local --strip-components=1 --no-same-owner; \
       ln -s /usr/local/bin/node /usr/local/bin/nodejs; \
       rm node.tar.xz; \
