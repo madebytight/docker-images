@@ -1,5 +1,5 @@
 alpine:
-  '3.19.0':
+  '3.22':
     ruby:
       '3.1.7': '658acc455b6bda87ac6cc1380e86552b9c1af87055e7a127589c5bf7ed80b035'
       '3.2.9': 'cf6699d0084c588e7944d92e1a8edda28b1cc3ee471a1f0aebb4b3d32c9753b2'

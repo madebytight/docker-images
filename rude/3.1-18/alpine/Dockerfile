@@ -1,4 +1,4 @@
-FROM 'alpine:3.19.0'
+FROM 'alpine:3.22'
 
 #
 # Node:
@@ -6,14 +6,14 @@ FROM 'alpine:3.19.0'
 # - Based on https://hub.docker.com/_/node
 #
 
-ARG NODE_VERSION="18.19.0"
+ARG NODE_VERSION="18.20.8"
 
 RUN set -eux; \
     ARCH="$(apk --print-arch)"; \
     if [ $ARCH = "x86_64" ]; then \
       NODE_SRC="https://unofficial-builds.nodejs.org/download/release/v$NODE_VERSION/node-v$NODE_VERSION-linux-x64-musl.tar.xz";\
       wget -O node.tar.xz "$NODE_SRC"; \
-      echo "10b7b23b6b867a25f060a433b83f5c3ecb3bcf7cdba1c0ce46443065a832fd41 *node.tar.xz" | sha256sum -c; \
+      echo "2c75d5d562d3ffc049ca1bbea65b68ae6bd0ec50ed04b1f606e065eaf35e8599 *node.tar.xz" | sha256sum -c; \
       tar -xJf "node.tar.xz" -C /usr/local --strip-components=1 --no-same-owner; \
       ln -s /usr/local/bin/node /usr/local/bin/nodejs; \
       rm node.tar.xz; \
@@ -79,8 +79,8 @@ RUN set -eux; \
 #
 
 ARG RUBY_MAJOR="3.1"
-ARG RUBY_MINOR="3.1.4"
-ARG RUBY_CHECKSUM="1b6d6010e76036c937b9671f4752f065aeca800a6c664f71f6c9a699453af94f"
+ARG RUBY_MINOR="3.1.7"
+ARG RUBY_CHECKSUM="658acc455b6bda87ac6cc1380e86552b9c1af87055e7a127589c5bf7ed80b035"
 
 ARG RUBY_SRC="https://cache.ruby-lang.org/pub/ruby/${RUBY_MAJOR}/ruby-${RUBY_MINOR}.tar.xz"
 ARG RUBY_DST="ruby-${RUBY_MINOR}"
@@ -185,10 +185,10 @@ RUN set -eux; \
     yarn -v
 
 # Bundler setup
-ENV GEM_HOME /usr/local/bundle
+ENV GEM_HOME=/usr/local/bundle
 ENV BUNDLE_SILENCE_ROOT_WARNING=1 \
     BUNDLE_APP_CONFIG="$GEM_HOME"
-ENV PATH $GEM_HOME/bin:$PATH
+ENV PATH=$GEM_HOME/bin:$PATH
 RUN mkdir -p "$GEM_HOME"
 
 # Permissions
